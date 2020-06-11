@@ -6,13 +6,13 @@
     - always
 
 
-- name: Check Docker Compose status
-  stat:
-    path: "{{ docker_base_compose_bin }}"
-  register: _compose_bin
-  changed_when: false
-  tags:
-    - always
+# - name: Check Docker Compose status
+#   stat:
+#     path: "{{ docker_base_compose_bin }}"
+#   register: _compose_bin
+#   changed_when: false
+#   tags:
+#     - always
 
 # ---
 
@@ -53,8 +53,8 @@
   shell: |
     curl -L "{{ docker_base_compose_url }}$(uname -s)-$(uname -m)" -o {{ docker_base_compose_bin }} \
     && chmod +x {{ docker_base_compose_bin }}
-  when:
-    - not _compose_bin.stat.exists
+  # when:
+  #   - not _compose_bin.stat.exists
   tags:
     - setup
 
