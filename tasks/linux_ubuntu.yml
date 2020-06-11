@@ -1,0 +1,124 @@
+- name: Check LSB release name
+  shell: lsb_release -cs
+  register: _lsb_release
+  changed_when: false
+  tags:
+    - always
+
+
+- name: Check Docker Compose status
+  stat:
+    path: "{{ docker_base_compose_bin }}"
+  register:
+    _compose_bin
+  changed_when: false
+  tags:
+    - always
+
+# ---
+
+- name: Add Docker repository key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+  tags:
+    - setup
+
+
+- name: Add Docker repository
+  apt_repository:
+    repo: "deb https://download.docker.com/linux/ubuntu {{ _lsb_release.stdout }} stable"
+    state: present
+  tags:
+    - setup
+
+
+- name: Install Docker and dependencies
+  package:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - bridge-utils
+    state: present
+  tags:
+    - setup
+
+
+- name: Install Docker compose
+  shell: |
+    curl -L "{{ docker_base_compose_url }}$(uname -s)-$(uname -m)" -o {{ docker_base_compose_bin }} \
+    && chmod +x {{ docker_base_compose_bin }}
+  when:
+    - not _compose_bin.stat.exists
+  tags:
+    - setup
+
+
+- name: Install Docker bindings for Python
+  pip:
+    name:
+      - docker
+      - docker-compose
+      - jsondiff
+    state: present
+  tags:
+    - setup
+
+
+- name: Start and enable Docker service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+  tags:
+    - setup
+
+# ---
+
+- name: Stop and disable Docker service
+  service:
+    name: docker
+    state: stopped
+    enabled: yes
+  tags:
+    - remove
+
+
+- name: Uninstall Docker compose
+  file:
+    path: "{{ docker_base_compose_bin }}"
+    state: absent
+  tags:
+    - remove
+
+
+- name: Uninstall Docker
+  package:
+    name:
+      - docker-ce
+      - docker-ce-cli
+    state: absent
+  tags:
+    - remove
+
+
+- name: Remove Docker repository
+  apt_repository:
+    repo: "deb https://download.docker.com/linux/ubuntu {{ _lsb_release.stdout }} stable"
+    state: absent
+  tags:
+    - remove
+
+
+- name: Remove Docker repository key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: absent
+  tags:
+    - remove

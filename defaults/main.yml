@@ -1,0 +1,3 @@
+docker_base_compose_version: "1.24.1"
+docker_base_compose_bin: /usr/local/bin/docker-compose
+docker_base_compose_url: "https://github.com/docker/compose/releases/download/{{ docker_base_compose_version }}/docker-compose-"
