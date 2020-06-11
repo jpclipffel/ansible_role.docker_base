@@ -9,8 +9,7 @@
 - name: Check Docker Compose status
   stat:
     path: "{{ docker_base_compose_bin }}"
-  register:
-    _compose_bin
+  register: _compose_bin
   changed_when: false
   tags:
     - always
