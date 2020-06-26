@@ -21,6 +21,7 @@
     url: https://download.docker.com/linux/ubuntu/gpg
     state: present
   tags:
+    - never
     - setup
 
 
@@ -29,6 +30,7 @@
     repo: "deb https://download.docker.com/linux/ubuntu {{ _lsb_release.stdout }} stable"
     state: present
   tags:
+    - never
     - setup
 
 
@@ -46,6 +48,7 @@
       - bridge-utils
     state: present
   tags:
+    - never
     - setup
 
 
@@ -56,6 +59,7 @@
   # when:
   #   - not _compose_bin.stat.exists
   tags:
+    - never
     - setup
 
 
@@ -67,6 +71,7 @@
       - jsondiff
     state: present
   tags:
+    - never
     - setup
 
 
@@ -76,6 +81,7 @@
     state: started
     enabled: yes
   tags:
+    - never
     - setup
 
 # ---
@@ -86,6 +92,7 @@
     state: stopped
     enabled: yes
   tags:
+    - never
     - remove
 
 
@@ -94,6 +101,7 @@
     path: "{{ docker_base_compose_bin }}"
     state: absent
   tags:
+    - never
     - remove
 
 
@@ -104,6 +112,7 @@
       - docker-ce-cli
     state: absent
   tags:
+    - never
     - remove
 
 
@@ -112,12 +121,5 @@
     repo: "deb https://download.docker.com/linux/ubuntu {{ _lsb_release.stdout }} stable"
     state: absent
   tags:
-    - remove
-
-
-- name: Remove Docker repository key
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    state: absent
-  tags:
+    - never
     - remove
