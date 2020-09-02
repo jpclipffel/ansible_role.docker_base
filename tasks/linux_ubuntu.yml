@@ -1,9 +1,25 @@
-- name: Check LSB release name
+# code: language=Ansible insertSpaces=true tabSize=2
+
+
+- name: Retrieve LSB release name
   shell: lsb_release -cs
   register: _lsb_release
   changed_when: false
-  tags:
-    - always
+  tags: [always]
+
+
+- name: Retrieve uname -s
+  shell: uname -s
+  register: _uname_s
+  changed_when: false
+  tags: [always]
+
+
+- name: Retrieve uname -m
+  shell: uname -m
+  register: _uname_m
+  changed_when: false
+  tags: [always]
 
 
 # - name: Check Docker Compose status
@@ -14,7 +30,6 @@
 #   tags:
 #     - always
 
-# ---
 
 - name: Add Docker repository key
   apt_key:
@@ -52,12 +67,22 @@
     - setup
 
 
+# - name: Install Docker compose
+#   shell: |
+#     curl -L "{{ docker_base_compose_url }}$(uname -s)-$(uname -m)" -o {{ docker_base_compose_bin }} \
+#     && chmod +x {{ docker_base_compose_bin }}
+#   # when:
+#   #   - not _compose_bin.stat.exists
+#   tags:
+#     - never
+#     - setup
+
+
 - name: Install Docker compose
-  shell: |
-    curl -L "{{ docker_base_compose_url }}$(uname -s)-$(uname -m)" -o {{ docker_base_compose_bin }} \
-    && chmod +x {{ docker_base_compose_bin }}
-  # when:
-  #   - not _compose_bin.stat.exists
+  copy:
+    src: "files/docker-compose-{{ _uname_s.stdout }}-{{ _uname_m.stdout }}"
+    dest: "{{ docker_base_compose_bin }}"
+    mode: 777
   tags:
     - never
     - setup
