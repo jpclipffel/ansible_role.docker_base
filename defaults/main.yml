@@ -5,3 +5,6 @@ docker_base_compose_url: "https://github.com/docker/compose/releases/download/{{
 # Docker configuration
 docker_base_daemon_path: "/etc/docker/daemon.json"
 docker_base_insecure_registries: []
+docker_base_mirrors: []
+docker_base_username: ""
+docker_base_password: ""

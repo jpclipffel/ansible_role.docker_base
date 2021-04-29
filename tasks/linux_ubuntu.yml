@@ -97,11 +97,20 @@
   tags: [never, setup]
 
 
-- name: Start and enable Docker service
+- name: (re)Start and enable Docker service
   service:
     name: docker
-    state: started
+    state: restarted
     enabled: yes
+  tags: [never, setup]
+
+
+- name: Login to Docker
+  shell: |
+    docker login -u "{{ docker_base_username }}" -p "{{ docker_base_password }}"
+  when:
+    - docker_base_username | length > 0
+    - docker_base_password | length > 0
   tags: [never, setup]
 
 # ---
