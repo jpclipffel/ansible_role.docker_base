@@ -97,14 +97,6 @@
   tags: [never, setup]
 
 
-- name: (re)Start and enable Docker service
-  service:
-    name: docker
-    state: restarted
-    enabled: yes
-  tags: [never, setup]
-
-
 - name: Login to Docker
   shell: |
     docker login -u "{{ docker_base_username }}" -p "{{ docker_base_password }}"
@@ -112,6 +104,27 @@
     - docker_base_username | length > 0
     - docker_base_password | length > 0
   tags: [never, setup]
+
+
+- name: Propagates Docker config to Kubelet
+  copy:
+    remote_src: yes
+    src: "{{ansible_env.HOME }}/.docker/config.json"
+    dest: "{{ item }}"
+  with_items:
+    - "/var/lib/kubelet/.dockercfg"
+    # - "/etc/docker/config.json"
+  failed_when: false
+  tags: [never, setup]
+
+
+- name: (re)Start and enable Docker service
+  service:
+    name: docker
+    state: restarted
+    enabled: yes
+  tags: [never, setup]
+
 
 # ---
 
